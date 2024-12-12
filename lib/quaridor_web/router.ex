@@ -5,9 +5,15 @@ defmodule QuaridorWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", QuaridorWeb do
+  scope "/", QuaridorWeb do
     pipe_through :api
 
     get "/health-check", HealthCheck, :health_check
+  end
+
+  scope "/auth", QuaridorWeb.Auth do
+    pipe_through :api
+
+    post "/sign-in", AuthController, :sign_in
   end
 end
