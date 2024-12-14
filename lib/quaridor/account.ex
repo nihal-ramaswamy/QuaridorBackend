@@ -5,8 +5,7 @@ defmodule Quaridor.Account do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "accounts" do
-    field :password, :string, redact: true
-    field :unhashed_password, :string, virtual: true
+    field :password, :string
     field :in_game_name, :string
     field :email, :string
     field :is_admin, :boolean, default: false
@@ -22,5 +21,9 @@ defmodule Quaridor.Account do
     |> validate_required([:in_game_name, :email, :password, :is_admin])
     |> unique_constraint(:email)
     |> unique_constraint(:in_game_name)
+  end
+
+  def hash_password(password) do
+    Bcrypt.hash_pwd_salt(password)
   end
 end

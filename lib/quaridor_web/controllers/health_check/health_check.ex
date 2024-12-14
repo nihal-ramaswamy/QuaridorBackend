@@ -1,4 +1,4 @@
-defmodule QuaridorWeb.HealthCheck do
+defmodule QuaridorWeb.HealthCheck.HealthCheckController do
   use QuaridorWeb, :controller
 
   def health_check(conn, _params) do
