@@ -41,6 +41,10 @@ defmodule Quaridor.Account do
     Bcrypt.hash_pwd_salt(password)
   end
 
+  @doc """
+  Compares if the provided password is the equivalent to the hashed password.
+  """
+  @spec is_password_match?(String.t(), String.t()) :: boolean()
   def is_password_match?(password, unhashed_password) do
     Bcrypt.verify_pass(unhashed_password, password)
   end
