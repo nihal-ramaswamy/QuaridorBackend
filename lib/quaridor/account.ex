@@ -2,6 +2,16 @@ defmodule Quaridor.Account do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @typedoc """
+  Account details to store in the database. Make sure the password is hashed before storing.
+  """
+  @type t :: %Quaridor.Account{
+          password: String.t(),
+          in_game_name: String.t(),
+          email: String.t(),
+          is_admin: boolean()
+        }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "accounts" do
@@ -23,7 +33,15 @@ defmodule Quaridor.Account do
     |> unique_constraint(:in_game_name)
   end
 
+  @doc """
+  Returns the hashed password
+  """
+  @spec hash_password(String.t()) :: String.t()
   def hash_password(password) do
     Bcrypt.hash_pwd_salt(password)
+  end
+
+  def is_password_match?(password, unhashed_password) do
+    Bcrypt.verify_pass(unhashed_password, password)
   end
 end
