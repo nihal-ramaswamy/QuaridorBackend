@@ -91,7 +91,7 @@ defmodule QuaridorWeb.Auth.AuthController do
 
   defp handle_sign_in(conn, data) do
     extra_claim = JwtAuthToken.set_claims(data)
-    token = JwtAuthToken.generate_and_sign!(extra_claim)
+    token = JwtAuthToken.sign(extra_claim)
 
     {:ok, email} = Map.fetch(data, :email)
     JwtAuthMemento.delete_and_write(email, token)

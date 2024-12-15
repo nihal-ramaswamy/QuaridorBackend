@@ -27,6 +27,6 @@ defmodule QuaridorWeb.Router do
   scope "/", QuaridorWeb.Auth do
     pipe_through :jwt_auth
 
-    post "/sign-out", AuthController, :sign_out
+    post "/auth/sign-out", AuthController, :sign_out
   end
 end

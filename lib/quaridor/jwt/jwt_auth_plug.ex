@@ -12,12 +12,18 @@ defmodule Quaridor.Jwt.JwtAuthPlug do
       |> List.first()
       |> String.replace_prefix("Bearer ", "")
 
-    jwt_data = token |> JwtAuthToken.verify_and_validate()
-    {:ok, data} = jwt_data
-    {:ok, email} = Map.fetch(data, "email")
+    jwt_data = token |> JwtAuthToken.get_claims()
 
     case jwt_data do
+      {:error, _data} ->
+        conn
+        |> resp(:unauthorized, "not logged in")
+        |> send_resp()
+        |> halt
+
       {:ok, claims} ->
+        {:ok, email} = Map.fetch(claims, :email)
+
         case JwtAuthMemento.is_email_logged_in?(email, token) do
           true ->
             conn
@@ -30,12 +36,6 @@ defmodule Quaridor.Jwt.JwtAuthPlug do
             |> send_resp()
             |> halt
         end
-
-      {:error, _error} ->
-        conn
-        |> resp(:unauthorized, "not logged in")
-        |> send_resp()
-        |> halt
     end
   end
 end
