@@ -24,9 +24,9 @@ defmodule QuaridorWeb.Router do
     post "/sign-up", AuthController, :sign_up
   end
 
-  scope "/test", QuaridorWeb.HealthCheck do
+  scope "/", QuaridorWeb.Auth do
     pipe_through :jwt_auth
 
-    get "/", HealthCheckController, :health_check
+    post "/sign-out", AuthController, :sign_out
   end
 end

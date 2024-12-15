@@ -7,6 +7,8 @@ defmodule Quaridor.Application do
 
   @impl true
   def start(_type, _args) do
+    Memento.Table.create!(Quaridor.Jwt.JwtAuthMemento)
+
     children = [
       QuaridorWeb.Telemetry,
       Quaridor.Repo,

@@ -26,3 +26,4 @@ erl_crash.dump
 quaridor-*.tar
 
 *.json
+.mnesia/

@@ -2,6 +2,7 @@ defmodule QuaridorWeb.Auth.AuthController do
   @moduledoc """
   Handles sign up, sign in sign out.
   """
+  alias Quaridor.Jwt.JwtAuthMemento
   alias Quaridor.Jwt.JwtAuthToken
   alias Quaridor.Repo
   alias Quaridor.Account
@@ -44,7 +45,7 @@ defmodule QuaridorWeb.Auth.AuthController do
   Handle creation of new account. Hashes the password before storing it into the DB.
   """
   @spec sign_up(Plug.Conn.t(), Account.t()) :: Plug.Conn.t()
-  def(sign_up(conn, %{"account" => account_params})) do
+  def sign_up(conn, %{"account" => account_params}) do
     case Map.fetch(account_params, "password") do
       {:ok, unhashed_password} ->
         handle_sign_up(conn, account_params, unhashed_password)
@@ -54,6 +55,18 @@ defmodule QuaridorWeb.Auth.AuthController do
         |> put_status(:internal_server_error)
         |> json(%{error: "Error registering account"})
     end
+  end
+
+  @doc """
+  Handle sign out. Deletes entry from mnesia DB.
+  """
+  @spec sign_up(Plug.Conn.t(), %{email: String.t()}) :: Plug.Conn.t()
+  def sign_out(conn, %{"email" => email}) do
+    JwtAuthMemento.delete_token(email)
+
+    conn
+    |> put_status(:ok)
+    |> json(%{message: "signed out succesfully"})
   end
 
   defp handle_sign_up(conn, account_params, unhashed_password) do
@@ -79,6 +92,9 @@ defmodule QuaridorWeb.Auth.AuthController do
   defp handle_sign_in(conn, data) do
     extra_claim = JwtAuthToken.set_claims(data)
     token = JwtAuthToken.generate_and_sign!(extra_claim)
+
+    {:ok, email} = Map.fetch(data, :email)
+    JwtAuthMemento.delete_and_write(email, token)
 
     conn
     |> put_status(:ok)
