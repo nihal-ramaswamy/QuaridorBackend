@@ -1,5 +1,6 @@
 defmodule Quaridor.Jwt.JwtAuthToken do
   @salt "user auth"
+  @max_age 86400
 
   def set_claims(data) do
     {:ok, email} = Map.fetch(data, :email)
@@ -18,6 +19,6 @@ defmodule Quaridor.Jwt.JwtAuthToken do
   end
 
   def get_claims(token) do
-    Phoenix.Token.verify(QuaridorWeb.Endpoint, @salt, token, max_age: 86400)
+    Phoenix.Token.verify(QuaridorWeb.Endpoint, @salt, token, max_age: @max_age)
   end
 end

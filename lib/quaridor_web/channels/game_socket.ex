@@ -1,4 +1,7 @@
 defmodule QuaridorWeb.GameSocket do
+  alias Quaridor.Jwt.JwtAuthToken
+  alias Quaridor.Account
+  alias Quaridor.Repo
   use Phoenix.Socket
 
   # A Socket handler
@@ -34,8 +37,30 @@ defmodule QuaridorWeb.GameSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   @impl true
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket, _connect_info) do
+    jwt_data = token |> JwtAuthToken.get_claims()
+
+    case jwt_data do
+      {:error, _} ->
+        {:error, :unauthorized}
+
+      {:ok, claims} ->
+        {:ok, email} = Map.fetch(claims, :email)
+        data = Repo.get_by(Account, email: email)
+
+        if nil == data do
+          {:error, :unauthorized}
+        end
+
+        case Map.fetch(data, :id) do
+          :error ->
+            {:error, :unauthorized}
+
+          {:ok, id} ->
+            socket = assign(socket, :user_id, id)
+            {:ok, socket}
+        end
+    end
   end
 
   # Socket IDs are topics that allow you to identify all sockets for a given user:
@@ -49,5 +74,5 @@ defmodule QuaridorWeb.GameSocket do
   #
   # Returning `nil` makes this socket anonymous.
   @impl true
-  def id(_socket), do: nil
+  def id(socket), do: "users_socket:#{socket.assigns.user_id}"
 end
