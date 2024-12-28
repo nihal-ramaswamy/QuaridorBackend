@@ -12,7 +12,7 @@ defmodule Quaridor.Jwt.JwtAuthMemento do
       false
     end
 
-    case IO.inspect(Map.fetch(data, :token)) do
+    case Map.fetch(data, :token) do
       {:ok, db_token} -> token == db_token
       nil -> false
     end
