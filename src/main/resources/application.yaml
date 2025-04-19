@@ -1,0 +1,16 @@
+spring:
+  application:
+    name=quaridor
+  jpa:
+    hibernate:
+      ddl-auto=create
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://host.docker.internal/
+    username: postgres
+    password: postgres
+
+security:
+  jwt:
+    token:
+      secret: secret
