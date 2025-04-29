@@ -5,3 +5,16 @@ services:
       - ./.env
     ports:
       - "5432:5432"
+  mongo:
+    image: 'mongo'
+    env_file:
+      - ./.env
+    ports:
+      - "27017:27017"
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./.env

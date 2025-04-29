@@ -1,14 +1,14 @@
 spring:
-  application:
-    name=quaridor
   jpa:
-    hibernate:
-      ddl-auto=create
     show-sql: true
   datasource:
     url: jdbc:postgresql://host.docker.internal/
     username: postgres
     password: postgres
+  data:
+    mongodb:
+      uri: mongodb://root:example@localhost:27017/game
+      database: game
 
 security:
   jwt:
